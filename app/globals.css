@@ -1,0 +1,484 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------
+   AXERACT design tokens
+   Brand = the logo: near-black strokes + one deep-teal triangle.
+   Components only read the semantic variables below, never raw hex.
+------------------------------------------------------------------- */
+
+:root {
+  --ax-teal: #155662; /* sampled from the supplied logo */
+  --ax-teal-deep: #0d3a43;
+  --ax-teal-glow: #2a8fa0;
+  --ax-black: #111111;
+
+  /* neutral scale, light */
+  --background: #f6f6f4;
+  --surface: #ffffff;
+  --surface-alt: #eeeeeb;
+  --ink: #0b0c0c;
+  --ink-surface: #121414;
+  --text-primary: #0f1111;
+  --text-secondary: #616669;
+  --text-tertiary: #979c9f;
+  --border: rgba(15, 17, 17, 0.12);
+  --border-strong: rgba(15, 17, 17, 0.28);
+  --border-on-ink: rgba(255, 255, 255, 0.14);
+
+  --brand-primary: var(--ax-teal);
+  --brand-secondary: var(--ax-teal-deep);
+  --brand-accent: var(--ax-teal-glow);
+  --brand-text: var(--ax-teal);
+  --brand-soft: #e6eeef;
+  --brand-shadow: rgba(8, 40, 46, 0.55);
+  --glow: rgba(21, 86, 98, 0.35);
+
+  /* geometry */
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 18px;
+  --gutter: clamp(1rem, 4vw, 4rem);
+  --container: 1440px;
+
+  /* motion */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast: 220ms;
+  --dur-base: 480ms;
+  --dur-slow: 800ms;
+
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  --background: #0a0b0b;
+  --surface: #111314;
+  --surface-alt: #181b1c;
+  --ink: #050606;
+  --ink-surface: #0f1112;
+  --text-primary: #f1f2f0;
+  --text-secondary: #9fa5a7;
+  --text-tertiary: #6b7174;
+  --border: rgba(255, 255, 255, 0.12);
+  --border-strong: rgba(255, 255, 255, 0.26);
+  --border-on-ink: rgba(255, 255, 255, 0.12);
+  --brand-text: #4fb3c4;
+  --brand-soft: #0f1d20;
+  color-scheme: dark;
+}
+
+/* ------------------------------------------------------------------
+   Tailwind theme bridge
+------------------------------------------------------------------- */
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-alt: var(--surface-alt);
+  --color-ink: var(--ink);
+  --color-ink-surface: var(--ink-surface);
+  --color-primary: var(--text-primary);
+  --color-secondary: var(--text-secondary);
+  --color-tertiary: var(--text-tertiary);
+  --color-line: var(--border);
+  --color-line-strong: var(--border-strong);
+  --color-line-ink: var(--border-on-ink);
+  --color-brand: var(--brand-primary);
+  --color-brand-deep: var(--brand-secondary);
+  --color-brand-accent: var(--brand-accent);
+  --color-brand-text: var(--brand-text);
+  --color-brand-soft: var(--brand-soft);
+
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-display: var(--font-inter-tight), var(--font-inter), system-ui, sans-serif;
+
+  --radius-xs: var(--radius-xs);
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+
+  --ease-out: var(--ease-out);
+  --ease-in-out: var(--ease-in-out);
+
+  --breakpoint-xs: 30rem;
+  --breakpoint-3xl: 108rem;
+}
+
+/* ------------------------------------------------------------------
+   Base
+------------------------------------------------------------------- */
+html {
+  scroll-behavior: auto;
+  -webkit-text-size-adjust: 100%;
+}
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+body {
+  background: var(--background);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-feature-settings: "ss01", "cv11", "calt";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color var(--dur-base) var(--ease-out), color var(--dur-base) var(--ease-out);
+}
+
+::selection {
+  background: var(--brand-primary);
+  color: #fff;
+}
+
+:focus-visible {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: 3px;
+  border-radius: var(--radius-xs);
+}
+
+img,
+video {
+  display: block;
+  max-width: 100%;
+}
+
+/* ------------------------------------------------------------------
+   Layout primitives
+------------------------------------------------------------------- */
+.container-v {
+  width: 100%;
+  max-width: var(--container);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+/* structural rules — the grid made visible */
+.rule-t { border-top: 1px solid var(--border); }
+.rule-b { border-bottom: 1px solid var(--border); }
+.rule-l { border-left: 1px solid var(--border); }
+.rule-r { border-right: 1px solid var(--border); }
+.rule-x { border-inline: 1px solid var(--border); }
+
+.on-ink {
+  --border: var(--border-on-ink);
+  --border-strong: rgba(255, 255, 255, 0.3);
+  --text-primary: #f2f2ef;
+  --text-secondary: #a3a3a8;
+  --text-tertiary: #6f6f75;
+  --surface: var(--ink-surface);
+  --surface-alt: #1c1c1f;
+  --background: var(--ink-surface);
+  --brand-text: var(--brand-accent);
+  --brand-soft: rgba(255, 255, 255, 0.07);
+  color: var(--text-primary);
+}
+/* deep teal-black variant so two dark sections in a row still read as separate */
+.tone-deep { background: linear-gradient(180deg, #0b2c33 0%, #071a1f 55%, #060708 100%); }
+
+/* ------------------------------------------------------------------
+   Typography
+------------------------------------------------------------------- */
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.035em;
+  line-height: 0.95;
+  font-weight: 400;
+  text-wrap: balance;
+}
+.t-hero {
+  font-size: clamp(3.25rem, 8.6vw, 9rem);
+  letter-spacing: -0.045em;
+  line-height: 0.92;
+}
+.t-display {
+  font-size: clamp(2.5rem, 5.4vw, 6rem);
+  letter-spacing: -0.04em;
+  line-height: 0.96;
+}
+.t-title {
+  font-size: clamp(1.75rem, 3.2vw, 3.25rem);
+  letter-spacing: -0.03em;
+  line-height: 1.02;
+}
+.t-lead {
+  font-size: clamp(1.0625rem, 1.35vw, 1.375rem);
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+  color: var(--text-secondary);
+}
+.t-body {
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: var(--text-secondary);
+}
+.t-label {
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  line-height: 1;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  font-variant-numeric: tabular-nums;
+}
+.t-label b,
+.t-label strong {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+.t-mono {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+
+/* ------------------------------------------------------------------
+   Motion helpers
+------------------------------------------------------------------- */
+[data-reveal] {
+  opacity: 0;
+  transform: translate3d(0, 24px, 0);
+  will-change: transform, opacity;
+}
+[data-reveal].is-in {
+  opacity: 1;
+  transform: none;
+  transition: opacity 0.9s var(--ease-out), transform 0.9s var(--ease-out);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+.line-mask {
+  overflow: hidden;
+  display: block;
+  padding-bottom: 0.14em; /* room for descenders */
+  margin-bottom: -0.14em;
+}
+.line-mask > span {
+  display: block;
+  transform: translate3d(0, 110%, 0);
+  will-change: transform;
+}
+.is-in .line-mask > span,
+.line-mask.is-in > span {
+  transform: none;
+  transition: transform 1.1s var(--ease-out);
+  transition-delay: calc(var(--i, 0) * 90ms + var(--reveal-delay, 0ms));
+}
+
+/* QA flag: ?noanim renders every reveal in its final state */
+[data-noanim] [data-reveal],
+[data-noanim] .line-mask > span {
+  opacity: 1 !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal],
+  .line-mask > span {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* image treatment: quiet, slightly desaturated, brand-tinted on hover */
+.img-treat {
+  position: relative;
+  overflow: hidden;
+  background: var(--surface-alt);
+}
+.img-treat img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  transform: scale(1.02);
+  transition: transform 1.2s var(--ease-out), filter 0.8s var(--ease-out);
+}
+.img-treat::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent 55%, rgba(5, 5, 6, 0.55) 100%);
+  opacity: var(--img-shade, 0);
+  transition: opacity 0.6s var(--ease-out);
+}
+
+/* soft module cards (homepage bento / steps / features) — layered so utilities like bg-brand can override */
+@layer components {
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: 0 1px 2px rgba(11, 11, 12, 0.04), 0 18px 40px -28px rgba(11, 11, 12, 0.25);
+  }
+  .card-inset {
+    background: var(--surface-alt);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+  :root[data-theme="dark"] .card {
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 18px 40px -28px rgba(0, 0, 0, 0.6);
+  }
+}
+/* faint architectural grid behind the hero */
+.hero-grid {
+  background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 96px 96px;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, #000 30%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, #000 30%, transparent 100%);
+}
+.t-headline {
+  font-size: clamp(2.5rem, 6.9vw, 7.25rem);
+  letter-spacing: -0.045em;
+  line-height: 0.98;
+  text-align: center;
+  font-weight: 500;
+}
+@keyframes pen-write {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(-6deg); }
+  25% { transform: translate3d(3px, 5px, 0) rotate(2deg); }
+  50% { transform: translate3d(-2px, 1px, 0) rotate(-10deg); }
+  75% { transform: translate3d(4px, 4px, 0) rotate(0deg); }
+}
+.pen-write {
+  animation: pen-write 0.42s ease-in-out infinite;
+  transform-origin: 20% 90%;
+}
+/* thin rules above/below the headline with a light sweeping along them */
+@keyframes rule-sweep {
+  from { background-position: -40% 0; }
+  to { background-position: 140% 0; }
+}
+.hero-rule {
+  height: 1px;
+  background-image: linear-gradient(90deg, transparent, var(--brand-primary), transparent);
+  background-size: 30% 100%;
+  background-repeat: no-repeat;
+  background-color: var(--border);
+  animation: rule-sweep 5.5s linear infinite;
+}
+@keyframes orbit-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.orbit-arc {
+  transform-origin: 600px 380px;
+  animation: orbit-spin 40s linear infinite;
+}
+@keyframes orbit-float {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -9px, 0); }
+}
+.orbit-float {
+  animation: orbit-float 6s ease-in-out infinite;
+  will-change: transform;
+}
+/* Events hero */
+.panel-bg {
+  background: color-mix(in srgb, var(--brand-soft) 100%, transparent);
+}
+.t-h1 {
+  font-size: clamp(2.6rem, 5.5vw, 5.75rem);
+  letter-spacing: -0.045em;
+  line-height: 0.98;
+}
+.stripe-chip {
+  background:
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.4) 0 2px, transparent 2px 7px),
+    linear-gradient(90deg, var(--brand-accent), var(--brand-primary));
+}
+/* section tones: alternate backgrounds so neighbouring sections separate cleanly */
+.tone-surface { background: var(--surface); }
+.tone-soft {
+  background:
+    radial-gradient(60% 80% at 100% 0%, color-mix(in srgb, var(--brand-primary) 12%, transparent), transparent 70%),
+    linear-gradient(180deg, var(--brand-soft), color-mix(in srgb, var(--brand-primary) 9%, var(--brand-soft)));
+}
+/* framed panel: soft frosted brand wash, as in the architecture reference */
+.access-panel {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--surface) 75%, transparent), color-mix(in srgb, var(--surface) 45%, transparent));
+  backdrop-filter: blur(6px);
+  box-shadow: 0 40px 80px -50px rgba(12, 58, 62, 0.5);
+}
+.t-loud {
+  font-size: clamp(3.5rem, 10.5vw, 11rem);
+  letter-spacing: -0.05em;
+  line-height: 0.9;
+}
+
+/* waveform bars */
+@keyframes wave {
+  0%, 100% { transform: scaleY(0.25); }
+  50% { transform: scaleY(1); }
+}
+.wave-bar {
+  transform-origin: center;
+  animation: wave 1.6s var(--ease-in-out) infinite;
+}
+
+/* marquee */
+@keyframes marquee {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-50%, 0, 0); }
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 60s linear infinite;
+}
+.marquee:hover .marquee-track { animation-play-state: paused; }
+
+/* number dots for stepper */
+.dot-brand {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--brand-primary);
+  box-shadow: 0 0 0 4px var(--brand-soft);
+}
+
+
+/* the lock-up ships in two inks; show the right one for the theme */
+.logo-dark { display: none; }
+:root[data-theme="dark"] .logo-light { display: none; }
+:root[data-theme="dark"] .logo-dark { display: block; }
+
+/* the logo's triangle, used as a small repeated motif */
+.tri {
+  display: inline-block;
+  width: 0.62em;
+  height: 0.54em;
+  background: var(--brand-primary);
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+:root[data-theme="dark"] .tri { background: var(--brand-accent); }
+
+@keyframes tri-float {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -6px, 0); }
+}
+.tri-float { animation: tri-float 5s ease-in-out infinite; }
+
+@media (min-width: 768px) {
+  .chip-wall {
+    mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+  }
+}
