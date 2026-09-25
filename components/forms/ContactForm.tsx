@@ -7,6 +7,27 @@ import { cn } from "@/lib/utils";
 const field =
   "w-full border-b border-line bg-transparent py-3 text-[15px] text-primary placeholder:text-tertiary outline-none transition-colors focus:border-brand";
 
+/**
+ * Netlify Forms first (stored in Netlify, emailed via its form notifications);
+ * the /api/contact route (SMTP / webhook) is the fallback, e.g. off Netlify or in local dev.
+ */
+async function deliver(data: Record<string, string>) {
+  try {
+    const res = await fetch("/__forms.html", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ "form-name": "contact", ...data }).toString(),
+    });
+    if (res.ok) return true;
+  } catch {}
+  try {
+    const res = await fetch("/api/contact", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
 export function ContactForm({ reasons }: { reasons: string[] }) {
   const [state, setState] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [invalid, setInvalid] = useState<Record<string, boolean>>({});
@@ -27,12 +48,7 @@ export function ContactForm({ reasons }: { reasons: string[] }) {
       return;
     }
     setState("sending");
-    try {
-      const res = await fetch("/api/contact", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
-      setState(res.ok ? "sent" : "error");
-    } catch {
-      setState("error");
-    }
+    setState((await deliver(data)) ? "sent" : "error");
   }
 
   if (state === "sent") {
