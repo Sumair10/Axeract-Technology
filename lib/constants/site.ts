@@ -1,6 +1,6 @@
 export const SITE = {
   name: "Axeract",
-  url: "https://axeract.com",
+  url: "https://axeract.ai",
   legalName: "AXERACT TECHNOLOGY LTD",
   tagline: "Technology, made tangible.",
 };

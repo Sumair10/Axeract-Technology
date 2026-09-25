@@ -29,7 +29,7 @@ export async function POST(req: Request) {
   }
 
   const payload = {
-    source: "axeract.com",
+    source: "axeract.ai",
     receivedAt: new Date().toISOString(),
     name: name.trim().slice(0, 200),
     email: email.trim().slice(0, 200),
@@ -115,5 +115,5 @@ function toHtml(p: Record<string, string>, title: string) {
 <h2 style="margin:0 0 12px">${esc(title)}</h2>
 <table style="border-collapse:collapse">${row("Name", p.name)}${row("Email", p.email)}${row("Company", p.company)}${row("Reason", p.reason)}</table>
 ${p.message ? `<p style="margin:16px 0 4px;color:#666">Message</p><p style="margin:0;white-space:pre-wrap">${esc(p.message)}</p>` : ""}
-<p style="margin-top:20px;color:#999;font-size:12px">Received ${esc(p.receivedAt)} via axeract.com</p></div>`;
+<p style="margin-top:20px;color:#999;font-size:12px">Received ${esc(p.receivedAt)} via axeract.ai</p></div>`;
 }
