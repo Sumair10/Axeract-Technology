@@ -46,8 +46,15 @@ export async function POST(req: Request) {
   if (SMTP_HOST && SMTP_USER && SMTP_PASS) {
     attempted = true;
     try {
-      const port = Number(SMTP_PORT ?? 465);
-      const transporter = nodemailer.createTransport({ host: SMTP_HOST, port, secure: port === 465, auth: { user: SMTP_USER, pass: SMTP_PASS } });
+      const port = Number(SMTP_PORT ?? 587);
+      // 465 = implicit TLS; anything else (Microsoft 365 uses 587) must upgrade with STARTTLS
+      const transporter = nodemailer.createTransport({
+        host: SMTP_HOST,
+        port,
+        secure: port === 465,
+        requireTLS: port !== 465,
+        auth: { user: SMTP_USER, pass: SMTP_PASS },
+      });
       const label = `${payload.reason}`;
       await transporter.sendMail({
         from: `"Axeract website" <${SMTP_USER}>`,
