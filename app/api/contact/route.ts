@@ -7,7 +7,7 @@ type Payload = Record<string, string>;
 
 /**
  * Contact form submissions.
- *  1. Emailed to MAIL_TO over SMTP (Hostinger Titan) when SMTP_* are set.
+ *  1. Emailed to MAIL_TO over Microsoft 365 SMTP when SMTP_PASS is set (other SMTP_* default below).
  *  2. Optionally forwarded to CONTACT_WEBHOOK_URL.
  *  3. With neither configured, logged on the server so nothing is silently dropped in development.
  * The visitor sees success if at least one delivery route worked.
@@ -42,11 +42,18 @@ export async function POST(req: Request) {
   let attempted = false;
 
   // 1 — email
-  const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, MAIL_TO } = process.env;
-  if (SMTP_HOST && SMTP_USER && SMTP_PASS) {
+  // Microsoft 365 defaults; only the password must come from the environment (SMTP_PASS)
+  const {
+    SMTP_HOST = "smtp.office365.com",
+    SMTP_PORT = "587",
+    SMTP_USER = "sumair@axeract.ai",
+    SMTP_PASS,
+    MAIL_TO = "info@axeract.ai",
+  } = process.env;
+  if (SMTP_PASS) {
     attempted = true;
     try {
-      const port = Number(SMTP_PORT ?? 587);
+      const port = Number(SMTP_PORT);
       // 465 = implicit TLS; anything else (Microsoft 365 uses 587) must upgrade with STARTTLS
       const transporter = nodemailer.createTransport({
         host: SMTP_HOST,
@@ -86,9 +93,10 @@ export async function POST(req: Request) {
     }
   }
 
-  // 3 — nothing configured (development)
+  // 3 — nothing configured: fine in development, but never fake a success in production
   if (!attempted) {
-    console.log("[contact] (no SMTP/webhook configured)", JSON.stringify(payload));
+    console.error("[contact] no SMTP_PASS or CONTACT_WEBHOOK_URL configured", JSON.stringify(payload));
+    if (process.env.NODE_ENV === "production") return NextResponse.json({ ok: false }, { status: 503 });
     return NextResponse.json({ ok: true });
   }
 
