@@ -64,12 +64,13 @@ export async function POST(req: Request) {
       });
       const label = `${payload.reason}`;
       await transporter.sendMail({
-        from: `"Axeract website" <${SMTP_USER}>`,
-        to: MAIL_TO || SMTP_USER,
+        from: `"Axeract Website" <${SMTP_USER}>`,
+        to: `"Axeract Info" <${MAIL_TO}>`,
         replyTo: payload.email || undefined,
-        subject: `[Axeract] ${label} from ${payload.name}`,
-        text: toText(payload, label),
-        html: toHtml(payload, label),
+        // Outlook displays an alias under the mailbox owner's name, so spell the address out in the subject and body
+        subject: `[${MAIL_TO}] ${label} from ${payload.name}`,
+        text: toText(payload, label, MAIL_TO),
+        html: toHtml(payload, label, MAIL_TO),
       });
       delivered = true;
     } catch (err) {
@@ -107,8 +108,9 @@ export async function POST(req: Request) {
   return NextResponse.json({ ok: true });
 }
 
-function toText(p: Record<string, string>, title: string) {
+function toText(p: Record<string, string>, title: string, to = "") {
   return [
+    to && `Website enquiry to ${to}`,
     title,
     "",
     `Name: ${p.name}`,
@@ -124,9 +126,10 @@ function toText(p: Record<string, string>, title: string) {
 
 const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
 
-function toHtml(p: Record<string, string>, title: string) {
+function toHtml(p: Record<string, string>, title: string, to = "") {
   const row = (k: string, v: string) => (v ? `<tr><td style="padding:6px 16px 6px 0;color:#666">${k}</td><td style="padding:6px 0"><b>${esc(v)}</b></td></tr>` : "");
   return `<div style="font-family:Arial,sans-serif;font-size:15px;color:#111">
+${to ? `<p style="margin:0 0 6px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#155662">Website enquiry to ${esc(to)}</p>` : ""}
 <h2 style="margin:0 0 12px">${esc(title)}</h2>
 <table style="border-collapse:collapse">${row("Name", p.name)}${row("Email", p.email)}${row("Company", p.company)}${row("Reason", p.reason)}</table>
 ${p.message ? `<p style="margin:16px 0 4px;color:#666">Message</p><p style="margin:0;white-space:pre-wrap">${esc(p.message)}</p>` : ""}
