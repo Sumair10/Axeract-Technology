@@ -75,7 +75,7 @@ export function Nav() {
       >
         <div className="container-v flex h-[72px] items-center justify-between md:h-[88px]">
           <TransitionLink href="/" aria-label="Axeract home" className="flex items-center">
-            <BrandLogo height={34} priority className="max-md:[&_img]:!h-[26px]" />
+            <BrandLogo height={46} priority className="max-md:[&_img]:!h-[34px]" />
           </TransitionLink>
 
           <nav

@@ -11,7 +11,7 @@ export function Footer() {
       <div className="container-v">
         <div className="grid grid-cols-4 gap-y-12 border-b border-line py-16 md:grid-cols-12 md:py-24">
           <div className="col-span-4 md:col-span-6">
-            <BrandLogo onInk height={40} />
+            <BrandLogo onInk height={56} className="max-md:!h-[44px]" />
             <p className="font-display mt-10 max-w-[14ch] text-[clamp(2rem,3.6vw,3.5rem)] font-light text-white">{SITE.tagline}</p>
             <span className="t-label mt-6 block">{SITE.legalName}</span>
             <a href="mailto:info@axeract.ai" className="mt-6 inline-block text-[15px] text-white/85 underline-offset-4 transition-colors hover:text-white hover:underline">
