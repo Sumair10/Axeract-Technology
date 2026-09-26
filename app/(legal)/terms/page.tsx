@@ -1,8 +1,13 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import { LegalPage, LegalSection } from "@/components/legal/Legal";
 import { SITE } from "@/lib/constants/site";
 
-export const metadata: Metadata = { title: "Terms & Conditions", alternates: { canonical: "/terms" } };
+export const metadata: Metadata = pageMeta({
+  title: "Terms & Conditions",
+  description: "The terms that apply to your use of axeract.ai, the website of Axeract Technology Ltd.",
+  path: "/terms",
+});
 
 export default function TermsPage() {
   return (
@@ -28,6 +33,11 @@ export default function TermsPage() {
       </LegalSection>
       <LegalSection n={5} title="Changes">
         <p>We may update these terms from time to time. The date at the top of this page shows when they last changed.</p>
+      </LegalSection>
+      <LegalSection n={6} title="Contact">
+        <p>
+          Questions about these terms can be sent to <a href="mailto:legal@axeract.ai">legal@axeract.ai</a>.
+        </p>
       </LegalSection>
     </LegalPage>
   );

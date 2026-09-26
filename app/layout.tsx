@@ -6,6 +6,7 @@ import { SITE } from "@/lib/constants/site";
 import { Providers } from "@/components/layout/Providers";
 import { Nav } from "@/components/navigation/Nav";
 import { Footer } from "@/components/footer/Footer";
+import { CookieConsent } from "@/components/consent/CookieConsent";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 const interTight = Inter_Tight({ subsets: ["latin"], variable: "--font-inter-tight", display: "swap", weight: ["300", "400", "500"] });
@@ -31,6 +32,8 @@ export const metadata: Metadata = {
   twitter: { card: "summary_large_image", title: TITLE, description: DESCRIPTION, images: ["/og/axeract.png"] },
   alternates: { canonical: "/" },
   robots: { index: true, follow: true },
+  // Google Search Console: set NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION to the token from the "HTML tag" method
+  ...(process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION ? { verification: { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION } } : {}),
 };
 
 export const viewport: Viewport = {
@@ -61,6 +64,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             {children}
           </main>
           <Footer />
+          <CookieConsent />
         </Providers>
       </body>
     </html>

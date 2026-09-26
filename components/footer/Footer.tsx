@@ -2,6 +2,7 @@ import { TransitionLink } from "@/components/animation/TransitionLink";
 import { BrandLogo } from "@/components/navigation/BrandLogo";
 import { Arrow } from "@/components/ui/Button";
 import { SocialLinks } from "@/components/navigation/SocialLinks";
+import { CookieSettingsLink } from "@/components/consent/CookieConsent";
 import { FOOTER_LINKS, SITE } from "@/lib/constants/site";
 
 export function Footer() {
@@ -13,7 +14,10 @@ export function Footer() {
             <BrandLogo onInk height={40} />
             <p className="font-display mt-10 max-w-[14ch] text-[clamp(2rem,3.6vw,3.5rem)] font-light text-white">{SITE.tagline}</p>
             <span className="t-label mt-6 block">{SITE.legalName}</span>
-            <SocialLinks className="mt-8" itemClassName="!text-white/85 hover:!text-white" />
+            <a href="mailto:info@axeract.ai" className="mt-6 inline-block text-[15px] text-white/85 underline-offset-4 transition-colors hover:text-white hover:underline">
+              info@axeract.ai
+            </a>
+            <SocialLinks className="mt-6" itemClassName="!text-white/85 hover:!text-white" />
           </div>
 
           <div className="col-span-4 md:col-span-5 md:col-start-8">
@@ -32,7 +36,13 @@ export function Footer() {
         </div>
 
         <div className="flex flex-col gap-3 py-6 text-[12px] text-tertiary sm:flex-row sm:items-center sm:justify-between">
-          <span>© {SITE.legalName}. All rights reserved.</span>
+          <span className="flex flex-wrap items-center gap-x-4 gap-y-2">
+            {/* rendered at build time; every deploy refreshes it */}
+            <span>
+              © {new Date().getFullYear()} {SITE.legalName}. All rights reserved.
+            </span>
+            <CookieSettingsLink />
+          </span>
           <span className="t-label">We build what comes next.</span>
         </div>
       </div>

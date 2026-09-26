@@ -1,6 +1,6 @@
 import { Label } from "@/components/typography/Label";
 
-export const LEGAL_UPDATED = "25 September 2026";
+export const LEGAL_UPDATED = "26 September 2026";
 
 export function LegalPage({ label, title, intro, children }: { label: string; title: string; intro: string; children: React.ReactNode }) {
   return (
@@ -14,9 +14,9 @@ export function LegalPage({ label, title, intro, children }: { label: string; ti
   );
 }
 
-export function LegalSection({ n, title, children }: { n: number; title: string; children: React.ReactNode }) {
+export function LegalSection({ n, title, id, children }: { n: number; title: string; id?: string; children: React.ReactNode }) {
   return (
-    <section className="border-t border-line pt-6" aria-labelledby={`s${n}`}>
+    <section id={id} className="scroll-mt-28 border-t border-line pt-6" aria-labelledby={`s${n}`}>
       <h2 id={`s${n}`} className="font-display text-[clamp(1.4rem,2vw,1.75rem)] leading-[1.1]">
         <span className="t-mono mr-3 text-[13px] text-brand-text">{String(n).padStart(2, "0")}</span>
         {title}

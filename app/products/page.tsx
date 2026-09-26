@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import Image from "next/image";
 import { Label, MaskedHeading } from "@/components/typography/Label";
 import { Button } from "@/components/ui/Button";
@@ -8,12 +9,13 @@ import { TranslatorPhone } from "@/components/products/TranslatorPhone";
 import { IMG } from "@/lib/constants/images";
 import { VIVRA_URL } from "@/lib/constants/site";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta({
   title: "Products",
   description:
     "Axeract's portfolio brings together artificial intelligence, modern software engineering and thoughtful product design, starting with Vivra, AI-powered real-time translation.",
-  alternates: { canonical: "/products" },
-};
+  path: "/products",
+  image: "/og/products.png",
+});
 
 const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as React.CSSProperties;
 

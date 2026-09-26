@@ -24,6 +24,9 @@ export async function POST(req: Request) {
   if (body.company_website) return NextResponse.json({ ok: true });
 
   const { name, email, company, reason, message } = body;
+  // links in a name field, or a message that is mostly links, is spam: accept quietly, deliver nothing
+  const urlCount = (message?.match(/https?:\/\//gi) ?? []).length;
+  if (/https?:\/\/|www\./i.test(name ?? "") || urlCount > 3) return NextResponse.json({ ok: true });
   if (!name?.trim() || !email?.trim() || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email) || !message?.trim()) {
     return NextResponse.json({ ok: false, error: "Name, a valid email and a message are required." }, { status: 422 });
   }

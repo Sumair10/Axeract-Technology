@@ -42,3 +42,11 @@ export const SOCIAL = [
   { key: "tiktok", label: "TikTok", href: "https://www.tiktok.com/@axeract.technology" },
   { key: "github", label: "GitHub", href: "https://github.com/Axeract-Technology-Ltd" },
 ] as const;
+
+/** Public inboxes (aliases of the main Microsoft 365 mailbox). */
+export const EMAILS = [
+  { label: "General enquiries", address: "info@axeract.ai" },
+  { label: "Support", address: "support@axeract.ai" },
+  { label: "Careers", address: "careers@axeract.ai" },
+  { label: "Privacy & legal", address: "privacy@axeract.ai" },
+] as const;

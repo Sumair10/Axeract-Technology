@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 
@@ -11,6 +11,22 @@ const field =
  * Netlify Forms first (stored in Netlify, emailed via its form notifications);
  * the /api/contact route (SMTP / webhook) is the fallback, e.g. off Netlify or in local dev.
  */
+const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/;
+const LIMITS = { name: 120, email: 200, company: 160, message: 4000 };
+const MIN_FILL_MS = 2500; // humans don't complete this form faster than this; bots usually do
+
+type Errors = Partial<Record<"name" | "email" | "message", string>>;
+
+function validate(d: Record<string, string>): Errors {
+  const e: Errors = {};
+  if (!d.name?.trim()) e.name = "Please enter your name.";
+  if (!d.email?.trim()) e.email = "Please enter your email address.";
+  else if (!EMAIL_RE.test(d.email.trim())) e.email = "That email address doesn't look right.";
+  if (!d.message?.trim()) e.message = "Please write a message.";
+  else if (d.message.trim().length < 2) e.message = "Your message is a little short.";
+  return e;
+}
+
 async function deliver(data: Record<string, string>) {
   try {
     const res = await fetch("/__forms.html", {
@@ -30,26 +46,38 @@ async function deliver(data: Record<string, string>) {
 
 export function ContactForm({ reasons }: { reasons: string[] }) {
   const [state, setState] = useState<"idle" | "sending" | "sent" | "error">("idle");
-  const [invalid, setInvalid] = useState<Record<string, boolean>>({});
+  const [errors, setErrors] = useState<Errors>({});
+  const opened = useRef(0);
+  useEffect(() => {
+    opened.current = Date.now();
+  }, []);
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = e.currentTarget;
     const data = Object.fromEntries(new FormData(form).entries()) as Record<string, string>;
-    const bad = {
-      name: !data.name?.trim(),
-      email: !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(data.email ?? ""),
-      message: !data.message?.trim(),
-    };
-    setInvalid(bad);
-    if (Object.values(bad).some(Boolean)) {
-      const first = Object.keys(bad).find((k) => bad[k as keyof typeof bad]);
-      (form.elements.namedItem(first!) as HTMLElement | null)?.focus();
+    const found = validate(data);
+    setErrors(found);
+    const first = (["name", "email", "message"] as const).find((k) => found[k]);
+    if (first) {
+      (form.elements.namedItem(first) as HTMLElement | null)?.focus();
+      return;
+    }
+    // spam traps: filled honeypot or an impossibly fast submit → show success, send nothing
+    if (data.company_website || Date.now() - opened.current < MIN_FILL_MS) {
+      setState("sent");
       return;
     }
     setState("sending");
     setState((await deliver(data)) ? "sent" : "error");
   }
+
+  // clear a field's error as soon as it's corrected
+  const recheck = (name: keyof Errors, value: string) => {
+    if (!errors[name]) return;
+    const next = validate({ name: "x", email: "a@b.co", message: "ok", [name]: value });
+    setErrors((cur) => ({ ...cur, [name]: next[name] }));
+  };
 
   if (state === "sent") {
     return (
@@ -63,9 +91,9 @@ export function ContactForm({ reasons }: { reasons: string[] }) {
 
   return (
     <form onSubmit={onSubmit} className="grid grid-cols-1 gap-x-8 gap-y-7 sm:grid-cols-2" noValidate>
-      <Field label="Name" name="name" autoComplete="name" required invalid={invalid.name} />
-      <Field label="Email" name="email" type="email" autoComplete="email" required invalid={invalid.email} />
-      <Field label="Company" name="company" autoComplete="organization" optional />
+      <Field label="Name" name="name" autoComplete="name" required maxLength={LIMITS.name} error={errors.name} onInput={(v) => recheck("name", v)} />
+      <Field label="Email" name="email" type="email" autoComplete="email" required maxLength={LIMITS.email} error={errors.email} onInput={(v) => recheck("email", v)} />
+      <Field label="Company" name="company" autoComplete="organization" optional maxLength={LIMITS.company} />
       <label className="flex flex-col gap-1.5">
         <span className="t-label">Reason for Contact</span>
         <span className="relative">
@@ -87,11 +115,15 @@ export function ContactForm({ reasons }: { reasons: string[] }) {
           name="message"
           rows={5}
           required
-          aria-invalid={invalid.message || undefined}
-          className={cn(field, "resize-none", invalid.message && "border-red-500/70")}
+          maxLength={LIMITS.message}
+          aria-invalid={errors.message ? true : undefined}
+          aria-describedby={errors.message ? "message-error" : undefined}
+          onInput={(e) => recheck("message", e.currentTarget.value)}
+          className={cn(field, "resize-none", errors.message && "border-red-500/70")}
         />
+        <FieldError id="message-error" text={errors.message} />
       </label>
-      {/* honeypot */}
+      {/* honeypot: hidden from people, bots fill it in */}
       <input type="text" name="company_website" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden />
       <div className="flex flex-col gap-4 sm:col-span-2 sm:flex-row sm:items-center sm:justify-between">
         <Button type="submit" variant="brand" size="lg" className="rounded-full" disabled={state === "sending"}>
@@ -107,6 +139,15 @@ export function ContactForm({ reasons }: { reasons: string[] }) {
   );
 }
 
+function FieldError({ id, text }: { id: string; text?: string }) {
+  if (!text) return null;
+  return (
+    <span id={id} role="alert" className="text-[12.5px] text-red-600 [:root[data-theme=dark]_&]:text-red-400">
+      {text}
+    </span>
+  );
+}
+
 function Field({
   label,
   name,
@@ -114,7 +155,9 @@ function Field({
   required,
   optional,
   autoComplete,
-  invalid,
+  maxLength,
+  error,
+  onInput,
 }: {
   label: string;
   name: string;
@@ -122,8 +165,11 @@ function Field({
   required?: boolean;
   optional?: boolean;
   autoComplete?: string;
-  invalid?: boolean;
+  maxLength?: number;
+  error?: string;
+  onInput?: (value: string) => void;
 }) {
+  const errId = `${name}-error`;
   return (
     <label className="flex flex-col gap-1.5">
       <span className="t-label">
@@ -131,7 +177,18 @@ function Field({
         {required && <span className="text-brand-text"> *</span>}
         {optional && <span className="ml-2 normal-case tracking-normal text-tertiary">Optional</span>}
       </span>
-      <input name={name} type={type} required={required} autoComplete={autoComplete} aria-invalid={invalid || undefined} className={cn(field, invalid && "border-red-500/70")} />
+      <input
+        name={name}
+        type={type}
+        required={required}
+        autoComplete={autoComplete}
+        maxLength={maxLength}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={error ? errId : undefined}
+        onInput={onInput ? (e) => onInput(e.currentTarget.value) : undefined}
+        className={cn(field, error && "border-red-500/70")}
+      />
+      <FieldError id={errId} text={error} />
     </label>
   );
 }

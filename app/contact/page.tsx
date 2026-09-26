@@ -1,16 +1,18 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import Image from "next/image";
 import { Label, MaskedHeading } from "@/components/typography/Label";
 import { ContactForm } from "@/components/forms/ContactForm";
 import { SocialLinks } from "@/components/navigation/SocialLinks";
 import { IMG } from "@/lib/constants/images";
-import { CONTACT_REASONS } from "@/lib/constants/site";
+import { CONTACT_REASONS, EMAILS } from "@/lib/constants/site";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta({
   title: "Contact",
   description: "For product enquiries, partnerships, business opportunities, press or general questions, get in touch with Axeract.",
-  alternates: { canonical: "/contact" },
-};
+  path: "/contact",
+  image: "/og/contact.png",
+});
 
 export default function ContactPage() {
   return (
@@ -46,7 +48,19 @@ export default function ContactPage() {
             <div className="mt-10">
               <ContactForm reasons={[...CONTACT_REASONS]} />
             </div>
-            <div className="mt-12 flex flex-wrap items-center justify-between gap-4 border-t border-line pt-6">
+            <dl className="mt-12 grid grid-cols-1 gap-x-8 gap-y-5 border-t border-line pt-6 sm:grid-cols-2">
+              {EMAILS.map((e) => (
+                <div key={e.address}>
+                  <dt className="t-label">{e.label}</dt>
+                  <dd className="mt-2">
+                    <a href={`mailto:${e.address}`} className="text-[15px] text-primary underline-offset-4 transition-colors hover:text-brand-text hover:underline">
+                      {e.address}
+                    </a>
+                  </dd>
+                </div>
+              ))}
+            </dl>
+            <div className="mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-line pt-6">
               <span className="t-label">Follow what we&apos;re building</span>
               <SocialLinks />
             </div>

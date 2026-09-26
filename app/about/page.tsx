@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import Image from "next/image";
 import { Label, MaskedHeading } from "@/components/typography/Label";
 import { Button } from "@/components/ui/Button";
@@ -6,12 +7,13 @@ import { PageHero, PhotoBand } from "@/components/sections/Shared";
 import { Principles } from "@/components/home/HomeSections";
 import { IMG } from "@/lib/constants/images";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta({
   title: "About",
   description:
     "Axeract Technology Ltd is a product-focused technology company creating digital experiences across artificial intelligence, mobile software and emerging technologies.",
-  alternates: { canonical: "/about" },
-};
+  path: "/about",
+  image: "/og/about.png",
+});
 
 const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as React.CSSProperties;
 
