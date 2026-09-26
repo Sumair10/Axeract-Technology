@@ -39,4 +39,5 @@ export const SOCIAL = [
   { key: "instagram", label: "Instagram", href: "https://www.instagram.com/axeract.ai/" },
   { key: "facebook", label: "Facebook", href: "https://www.facebook.com/profile.php?id=61594499683436" },
   { key: "youtube", label: "YouTube", href: "https://www.youtube.com/@axeract" },
+  { key: "github", label: "GitHub", href: "https://github.com/Axeract-Technology-Ltd" },
 ] as const;
