@@ -1,6 +1,7 @@
 import { TransitionLink } from "@/components/animation/TransitionLink";
 import { BrandLogo } from "@/components/navigation/BrandLogo";
 import { Arrow } from "@/components/ui/Button";
+import { SocialLinks } from "@/components/navigation/SocialLinks";
 import { FOOTER_LINKS, SITE } from "@/lib/constants/site";
 
 export function Footer() {
@@ -12,6 +13,7 @@ export function Footer() {
             <BrandLogo onInk height={40} />
             <p className="font-display mt-10 max-w-[14ch] text-[clamp(2rem,3.6vw,3.5rem)] font-light text-white">{SITE.tagline}</p>
             <span className="t-label mt-6 block">{SITE.legalName}</span>
+            <SocialLinks className="mt-8" itemClassName="!text-white/85 hover:!text-white" />
           </div>
 
           <div className="col-span-4 md:col-span-5 md:col-start-8">

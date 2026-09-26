@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { Label, MaskedHeading } from "@/components/typography/Label";
 import { ContactForm } from "@/components/forms/ContactForm";
+import { SocialLinks } from "@/components/navigation/SocialLinks";
 import { IMG } from "@/lib/constants/images";
 import { CONTACT_REASONS } from "@/lib/constants/site";
 
@@ -44,6 +45,10 @@ export default function ContactPage() {
             </div>
             <div className="mt-10">
               <ContactForm reasons={[...CONTACT_REASONS]} />
+            </div>
+            <div className="mt-12 flex flex-wrap items-center justify-between gap-4 border-t border-line pt-6">
+              <span className="t-label">Follow what we&apos;re building</span>
+              <SocialLinks />
             </div>
           </div>
         </div>

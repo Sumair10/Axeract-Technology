@@ -1,7 +1,7 @@
 import { HomeHero, Intro, WhatWeBuild, Products, Process, Principles, AboutPreview, Technology } from "@/components/home/HomeSections";
 import { BrandMarquee, PhotoBand } from "@/components/sections/Shared";
 import { IMG } from "@/lib/constants/images";
-import { SITE } from "@/lib/constants/site";
+import { SITE, SOCIAL } from "@/lib/constants/site";
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -11,6 +11,7 @@ const jsonLd = {
   url: SITE.url,
   logo: `${SITE.url}/brand/axeract-logo.png`,
   slogan: SITE.tagline,
+  sameAs: SOCIAL.map((s) => s.href),
 };
 
 export default function Home() {

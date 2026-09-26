@@ -33,3 +33,9 @@ export const BRAND_LINES = [
 ];
 
 export const CONTACT_REASONS = ["Product Enquiry", "Partnership", "Business", "Press", "Careers", "Other"] as const;
+
+export const SOCIAL = [
+  { key: "linkedin", label: "LinkedIn", href: "https://www.linkedin.com/company/145252968/" },
+  { key: "instagram", label: "Instagram", href: "https://www.instagram.com/axeract.ai/" },
+  { key: "facebook", label: "Facebook", href: "https://www.facebook.com/profile.php?id=61594499683436" },
+] as const;
